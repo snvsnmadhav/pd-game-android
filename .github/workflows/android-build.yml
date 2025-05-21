@@ -1,0 +1,25 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build_apk:
+    runs-on: ubuntu-latest
+    container: kivy/buildozer
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build APK
+        run: |
+          buildozer init
+          sed -i 's/# requirements = .*/requirements = python3,pygame,numpy,matplotlib/' buildozer.spec
+          sed -i 's/# source.include_exts = .*/source.include_exts = py,png,jpg/' buildozer.spec
+          buildozer -v android debug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: pd-game-apk
+          path: bin/*.apk
