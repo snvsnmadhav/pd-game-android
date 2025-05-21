@@ -8,14 +8,14 @@ jobs:
   build_apk:
     runs-on: ubuntu-latest
     container: kivy/buildozer
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Build APK
         run: |
-          buildozer init
-          sed -i 's/# requirements = .*/requirements = python3,pygame,numpy,matplotlib/' buildozer.spec
-          sed -i 's/# source.include_exts = .*/source.include_exts = py,png,jpg/' buildozer.spec
+          # This picks up buildozer.spec from repo root
           buildozer -v android debug
 
       - name: Upload APK
