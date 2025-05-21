@@ -7,17 +7,25 @@ on:
 jobs:
   build_apk:
     runs-on: ubuntu-latest
-    container: kivy/buildozer
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      # 1) Check out your repo
+      - uses: actions/checkout@v3
 
-      - name: Build APK
+      # 2) Pull the Buildozer Docker image
+      - name: Pull Buildozer Docker image
+        run: docker pull kivy/buildozer
+
+      # 3) Build the APK inside that container
+      - name: Build APK in Docker
         run: |
-          # This picks up buildozer.spec from repo root
-          buildozer -v android debug
+          docker run --rm \
+            -v "${{ github.workspace }}:/home/user/hostcwd" \
+            -w /home/user/hostcwd \
+            kivy/buildozer \
+            buildozer -v android debug
 
+      # 4) Upload the resulting .apk back to GitHub
       - name: Upload APK
         uses: actions/upload-artifact@v3
         with:
